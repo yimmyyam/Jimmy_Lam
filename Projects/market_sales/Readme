@@ -1,0 +1,5 @@
+Purpose of this notebook is to create a dashboard using a kaggle dataset relating to super market sales data
+
+The dashboard is to inform the users of how to use the data to maximize gross income. Analysis on the factors of product line, customer type, and rating are all shown in the dashboard.
+
+The process is as follows: 1) uploading data 2) cleaning data 3) understanding relationships of the data and how to tell a story based on the data and the intended use 4) built dashboard using tableau, see PDF
