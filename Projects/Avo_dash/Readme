@@ -1,0 +1,43 @@
+Avocado Dashboard
+The purpose of this dashboard is to provide user with information to maximize revenue using daily avocado sales data.
+
+Step 1 Formulate the story data and visualization
+Step 2 Organizing and selecting data
+Step 3 Build charts
+Step 4 Present dashboard
+
+Step 1
+Would like to figure out how the regional differences on product mixes as well as historic prices relating to avocado. This will provide insights on bag sizes to maximize prices
+
+Step 2
+Pulling data from SQL database
+
+SELECT 
+    Date,
+    AveragePrice,
+    Total_Volume,
+    _4046,
+    _4225,
+    _4770,
+    region,
+    year,
+    Total_Bags
+    Small_Bags,
+    Large_Bags,
+    XLarge_Bags,
+    type
+FROM 
+    `pelagic-campus-346914.Avo.Avocado`
+WHERE  Total_Bags <> 0;
+
+After pulling SQL query, uploaded the dataset to tableau where the PLC coding above was replaced with the appropriate descriptions.
+
+Small/Medium Hass Avocado (~3-5oz avocado) | #4046 Avocado
+Large Hass Avocado (~8-10oz avocado) | #4225 Avocado
+Extra Large Hass Avocado (~10-15oz avocado) | #4770 Avocado
+
+Step 3
+Created charts in tableau
+
+Step 4
+Created dashboard in tableau (see PDF)
