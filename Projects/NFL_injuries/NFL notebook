@@ -1,0 +1,606 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "bec973f3-c60e-4576-a6e0-b5fd877741e5",
+   "metadata": {},
+   "source": [
+    "## The purpose of this notebook is to investigate the relationship between the playing surface and the injuries relating to NFL athletes\n",
+    "# The process is broken down into 4 parts, loading the data, scrubbing the data, understanding the data, and prepare charts for descriptive analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "881f3f8f-0ba5-4ae7-b5a9-2021a51d3988",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pylab as plt\n",
+    "import seaborn as sns\n",
+    "import matplotlib.patches as patches"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "0d9969d5-36de-46d2-9cad-e6d83bd1d1d3",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "injury = pd.read_csv(\"injuryrecord.csv\")\n",
+    "play_list = pd.read_csv(\"playlist.csv\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "7e938dbb-4642-4571-9bae-a22caaf4c576",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "player_data = pd.read_csv(\"playertrackdata.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "id": "94947162-bec6-44a4-8c46-794f2d5678eb",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Knee     48\n",
+       "Ankle    42\n",
+       "Foot      7\n",
+       "Toes      7\n",
+       "Heel      1\n",
+       "Name: BodyPart, dtype: int64"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "injury['BodyPart'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "cdc100c5-330d-4afc-b31a-2b35f932a638",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>PlayerKey</th>\n",
+       "      <th>GameID</th>\n",
+       "      <th>PlayKey</th>\n",
+       "      <th>RosterPosition</th>\n",
+       "      <th>PlayerDay</th>\n",
+       "      <th>PlayerGame</th>\n",
+       "      <th>StadiumType</th>\n",
+       "      <th>FieldType</th>\n",
+       "      <th>Temperature</th>\n",
+       "      <th>Weather</th>\n",
+       "      <th>PlayType</th>\n",
+       "      <th>PlayerGamePlay</th>\n",
+       "      <th>Position</th>\n",
+       "      <th>PositionGroup</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>26624</td>\n",
+       "      <td>26624-1</td>\n",
+       "      <td>26624-1-1</td>\n",
+       "      <td>Quarterback</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Synthetic</td>\n",
+       "      <td>63</td>\n",
+       "      <td>Clear and warm</td>\n",
+       "      <td>Pass</td>\n",
+       "      <td>1</td>\n",
+       "      <td>QB</td>\n",
+       "      <td>QB</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>26624</td>\n",
+       "      <td>26624-1</td>\n",
+       "      <td>26624-1-2</td>\n",
+       "      <td>Quarterback</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Synthetic</td>\n",
+       "      <td>63</td>\n",
+       "      <td>Clear and warm</td>\n",
+       "      <td>Pass</td>\n",
+       "      <td>2</td>\n",
+       "      <td>QB</td>\n",
+       "      <td>QB</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>26624</td>\n",
+       "      <td>26624-1</td>\n",
+       "      <td>26624-1-3</td>\n",
+       "      <td>Quarterback</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Synthetic</td>\n",
+       "      <td>63</td>\n",
+       "      <td>Clear and warm</td>\n",
+       "      <td>Rush</td>\n",
+       "      <td>3</td>\n",
+       "      <td>QB</td>\n",
+       "      <td>QB</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>26624</td>\n",
+       "      <td>26624-1</td>\n",
+       "      <td>26624-1-4</td>\n",
+       "      <td>Quarterback</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Synthetic</td>\n",
+       "      <td>63</td>\n",
+       "      <td>Clear and warm</td>\n",
+       "      <td>Rush</td>\n",
+       "      <td>4</td>\n",
+       "      <td>QB</td>\n",
+       "      <td>QB</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>26624</td>\n",
+       "      <td>26624-1</td>\n",
+       "      <td>26624-1-5</td>\n",
+       "      <td>Quarterback</td>\n",
+       "      <td>1</td>\n",
+       "      <td>1</td>\n",
+       "      <td>Outdoor</td>\n",
+       "      <td>Synthetic</td>\n",
+       "      <td>63</td>\n",
+       "      <td>Clear and warm</td>\n",
+       "      <td>Pass</td>\n",
+       "      <td>5</td>\n",
+       "      <td>QB</td>\n",
+       "      <td>QB</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   PlayerKey   GameID    PlayKey RosterPosition  PlayerDay  PlayerGame  \\\n",
+       "0      26624  26624-1  26624-1-1    Quarterback          1           1   \n",
+       "1      26624  26624-1  26624-1-2    Quarterback          1           1   \n",
+       "2      26624  26624-1  26624-1-3    Quarterback          1           1   \n",
+       "3      26624  26624-1  26624-1-4    Quarterback          1           1   \n",
+       "4      26624  26624-1  26624-1-5    Quarterback          1           1   \n",
+       "\n",
+       "  StadiumType  FieldType  Temperature         Weather PlayType  \\\n",
+       "0     Outdoor  Synthetic           63  Clear and warm     Pass   \n",
+       "1     Outdoor  Synthetic           63  Clear and warm     Pass   \n",
+       "2     Outdoor  Synthetic           63  Clear and warm     Rush   \n",
+       "3     Outdoor  Synthetic           63  Clear and warm     Rush   \n",
+       "4     Outdoor  Synthetic           63  Clear and warm     Pass   \n",
+       "\n",
+       "   PlayerGamePlay Position PositionGroup  \n",
+       "0               1       QB            QB  \n",
+       "1               2       QB            QB  \n",
+       "2               3       QB            QB  \n",
+       "3               4       QB            QB  \n",
+       "4               5       QB            QB  "
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "play_list.head()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "76728f58-a5ff-4118-bbd9-7461f021f055",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Outdoor                   145032\n",
+       "Outdoors                   32956\n",
+       "Indoors                    22805\n",
+       "Dome                        9376\n",
+       "Retractable Roof            8914\n",
+       "Indoor                      6892\n",
+       "Open                        4124\n",
+       "Domed, closed               3076\n",
+       "Retr. Roof - Closed         2235\n",
+       "Retr. Roof-Closed           2015\n",
+       "Domed, open                 1779\n",
+       "Dome, closed                1059\n",
+       "Closed Dome                 1011\n",
+       "Domed                        985\n",
+       "Oudoor                       914\n",
+       "Domed, Open                  807\n",
+       "Ourdoor                      778\n",
+       "Outdoor Retr Roof-Open       601\n",
+       "Outddors                     595\n",
+       "Indoor, Roof Closed          547\n",
+       "Retr. Roof-Open              486\n",
+       "Retr. Roof - Open            486\n",
+       "Indoor, Open Roof            479\n",
+       "Bowl                         465\n",
+       "Retr. Roof Closed            414\n",
+       "Heinz Field                  389\n",
+       "Outdor                       356\n",
+       "Outside                      341\n",
+       "Cloudy                       178\n",
+       "Name: StadiumType, dtype: int64"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "play_list['StadiumType'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "c240d9e2-9dee-4f93-94bf-c0a4fbf98fdf",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Cloudy                                                                              60705\n",
+       "Sunny                                                                               51728\n",
+       "Partly Cloudy                                                                       28463\n",
+       "Clear                                                                               25923\n",
+       "Mostly Cloudy                                                                       11176\n",
+       "                                                                                    ...  \n",
+       "30% Chance of Rain                                                                    354\n",
+       "Partly Clouidy                                                                        302\n",
+       "Coudy                                                                                 278\n",
+       "Cloudy with periods of rain, thunder possible. Winds shifting to WNW, 10-20 mph.      246\n",
+       "Party Cloudy                                                                          230\n",
+       "Name: Weather, Length: 63, dtype: int64"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "play_list['Weather'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "527f2175-5600-441a-aa94-9f5b33270fb2",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Outdoor                   145032\n",
+       "Outdoors                   32956\n",
+       "Indoors                    22805\n",
+       "Dome                        9376\n",
+       "Retractable Roof            8914\n",
+       "Indoor                      6892\n",
+       "Open                        4124\n",
+       "Domed, closed               3076\n",
+       "Retr. Roof - Closed         2235\n",
+       "Retr. Roof-Closed           2015\n",
+       "Domed, open                 1779\n",
+       "Dome, closed                1059\n",
+       "Closed Dome                 1011\n",
+       "Domed                        985\n",
+       "Oudoor                       914\n",
+       "Domed, Open                  807\n",
+       "Ourdoor                      778\n",
+       "Outdoor Retr Roof-Open       601\n",
+       "Outddors                     595\n",
+       "Indoor, Roof Closed          547\n",
+       "Retr. Roof-Open              486\n",
+       "Retr. Roof - Open            486\n",
+       "Indoor, Open Roof            479\n",
+       "Bowl                         465\n",
+       "Retr. Roof Closed            414\n",
+       "Heinz Field                  389\n",
+       "Outdor                       356\n",
+       "Outside                      341\n",
+       "Cloudy                       178\n",
+       "Name: StadiumType, dtype: int64"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "play_list['StadiumType'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "10d09f5c-6d60-46bb-a194-0ae0f9ee2efc",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# create a dataframe with game-level information\n",
+    "game_df = play_list[['PlayerKey','GameID', 'StadiumType', 'FieldType', 'Weather', 'Temperature']].drop_duplicates().reset_index().drop(columns=['index'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "273f733e-0bec-4861-b314-2fab98ecdc1e",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def clean_weather(row):\n",
+    "    cloudy = ['Cloudy 50% change of rain', 'Hazy', 'Cloudy.', 'Overcast', 'Mostly Cloudy',\n",
+    "          'Cloudy, fog started developing in 2nd quarter', 'Partly Cloudy',\n",
+    "          'Mostly cloudy', 'Rain Chance 40%',' Partly cloudy', 'Party Cloudy',\n",
+    "          'Rain likely, temps in low 40s', 'Partly Clouidy', 'Cloudy, 50% change of rain','Mostly Coudy', '10% Chance of Rain',\n",
+    "          'Cloudy, chance of rain', '30% Chance of Rain', 'Cloudy, light snow accumulating 1-3\"',\n",
+    "          'cloudy', 'Coudy', 'Cloudy with periods of rain, thunder possible. Winds shifting to WNW, 10-20 mph.',\n",
+    "         'Cloudy fog started developing in 2nd quarter', 'Cloudy light snow accumulating 1-3\"',\n",
+    "         'Cloudywith periods of rain, thunder possible. Winds shifting to WNW, 10-20 mph.',\n",
+    "         'Cloudy 50% change of rain', 'Cloudy and cold',\n",
+    "       'Cloudy and Cool', 'Partly cloudy']\n",
+    "    \n",
+    "    clear = ['Clear, Windy',' Clear to Cloudy', 'Clear, highs to upper 80s',\n",
+    "             'Clear and clear','Partly sunny',\n",
+    "             'Clear, Windy', 'Clear skies', 'Sunny', 'Partly Sunny', 'Mostly Sunny', 'Clear Skies',\n",
+    "             'Sunny Skies', 'Partly clear', 'Fair', 'Sunny, highs to upper 80s', 'Sun & clouds', 'Mostly sunny','Sunny, Windy',\n",
+    "             'Mostly Sunny Skies', 'Clear and Sunny', 'Clear and sunny','Clear to Partly Cloudy', 'Clear Skies',\n",
+    "            'Clear and cold', 'Clear and warm', 'Clear and Cool', 'Sunny and cold', 'Sunny and warm', 'Sunny and clear']\n",
+    "    \n",
+    "    rainy = ['Rainy', 'Scattered Showers', 'Showers', 'Cloudy Rain', 'Light Rain', 'Rain shower', 'Rain likely, temps in low 40s.', 'Cloudy, Rain']\n",
+    "    \n",
+    "    snow = ['Heavy lake effect snow']\n",
+    "    \n",
+    "    indoor = ['Controlled Climate', 'Indoors', 'N/A Indoor', 'N/A (Indoors)']\n",
+    "        \n",
+    "    if row.Weather in cloudy:\n",
+    "        return 'Cloudy'\n",
+    "    \n",
+    "    if row.Weather in indoor:\n",
+    "        return 'Indoor'\n",
+    "    \n",
+    "    if row.Weather in clear:\n",
+    "        return 'Clear'\n",
+    "    \n",
+    "    if row.Weather in rainy:\n",
+    "        return 'Rain'\n",
+    "    \n",
+    "    if row.Weather in snow:\n",
+    "        return 'Snow'\n",
+    "      \n",
+    "    if row.Weather in ['Cloudy.', 'Heat Index 95', 'Cold']:\n",
+    "        return np.nan\n",
+    "    \n",
+    "    return row.Weather\n",
+    "\n",
+    "def clean_stadiumtype(row):\n",
+    "    if row.StadiumType in ['Bowl', 'Heinz Field', 'Cloudy']:\n",
+    "        return np.nan\n",
+    "    else:\n",
+    "        return row.StadiumType\n",
+    "\n",
+    "def clean_play_df(play_df):\n",
+    "    play_df_cleaned = play_df.copy()\n",
+    "    \n",
+    "    # clean StadiumType\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Oudoor|Outdoors|Ourdoor|Outddors|Outdor|Outside', 'Outdoor')\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Indoors|Indoor, Roof Closed|Indoor, Open Roof', 'Indoor')\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Closed Dome|Domed, closed|Domed, Open|Domed, open|Dome, closed|Domed', 'Dome')\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Retr. Roof-Closed|Outdoor Retr Roof-Open|Retr. Roof - Closed|Retr. Roof-Open|Retr. Roof - Open|Retr. Roof Closed', 'Retractable Roof')\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace('Open', 'Outdoor')\n",
+    "    play_df_cleaned['StadiumType'] = play_df_cleaned.apply(lambda row: clean_stadiumtype(row), axis=1)\n",
+    "    \n",
+    "    # clean Weather\n",
+    "    play_df_cleaned['Weather'] = play_df_cleaned.apply(lambda row: clean_weather(row), axis=1)\n",
+    "    \n",
+    "    return play_df_cleaned"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "55f12a96-e634-46bd-a4b5-9a7dae06e76e",
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/var/folders/v4/29rgsn393qlcwyx7p4p1_wtc0000gn/T/ipykernel_32389/2472618691.py:56: FutureWarning: The default value of regex will change from True to False in a future version.\n",
+      "  play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Oudoor|Outdoors|Ourdoor|Outddors|Outdor|Outside', 'Outdoor')\n",
+      "/var/folders/v4/29rgsn393qlcwyx7p4p1_wtc0000gn/T/ipykernel_32389/2472618691.py:57: FutureWarning: The default value of regex will change from True to False in a future version.\n",
+      "  play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Indoors|Indoor, Roof Closed|Indoor, Open Roof', 'Indoor')\n",
+      "/var/folders/v4/29rgsn393qlcwyx7p4p1_wtc0000gn/T/ipykernel_32389/2472618691.py:58: FutureWarning: The default value of regex will change from True to False in a future version.\n",
+      "  play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Closed Dome|Domed, closed|Domed, Open|Domed, open|Dome, closed|Domed', 'Dome')\n",
+      "/var/folders/v4/29rgsn393qlcwyx7p4p1_wtc0000gn/T/ipykernel_32389/2472618691.py:59: FutureWarning: The default value of regex will change from True to False in a future version.\n",
+      "  play_df_cleaned['StadiumType'] = play_df_cleaned['StadiumType'].str.replace(r'Retr. Roof-Closed|Outdoor Retr Roof-Open|Retr. Roof - Closed|Retr. Roof-Open|Retr. Roof - Open|Retr. Roof Closed', 'Retractable Roof')\n"
+     ]
+    }
+   ],
+   "source": [
+    "play_df_cleaned = clean_play_df(play_list)\n",
+    "game_df_cleaned = play_df_cleaned[['PlayerKey','GameID', 'StadiumType', 'FieldType', 'Weather', 'Temperature']].drop_duplicates().reset_index().drop(columns=['index'])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "501e6445-959b-496f-a25d-bd9bdde58ef8",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "game_df_cleaned.to_csv('gameclean.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "64873382-20aa-4757-a78e-18b174008d0f",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "-999    542\n",
+       " 68     292\n",
+       " 72     143\n",
+       " 61     143\n",
+       " 71     136\n",
+       "       ... \n",
+       " 34       8\n",
+       " 32       8\n",
+       " 10       8\n",
+       " 9        6\n",
+       " 26       5\n",
+       "Name: Temperature, Length: 79, dtype: int64"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "game_df_cleaned['Temperature'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "id": "232d385a-432b-411c-b077-ee312fdedf8c",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "game_df_cleaned = game_df_cleaned.drop(game_df_cleaned[game_df_cleaned.Temperature < 0].index)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "id": "95396849-23cf-484d-8864-af607e935f38",
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "68    292\n",
+       "61    143\n",
+       "72    143\n",
+       "71    136\n",
+       "48    131\n",
+       "     ... \n",
+       "10      8\n",
+       "34      8\n",
+       "32      8\n",
+       "9       6\n",
+       "26      5\n",
+       "Name: Temperature, Length: 78, dtype: int64"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "game_df_cleaned['Temperature'].value_counts()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "id": "e0a08bfa-4eec-4d2c-a9b5-cd8ab95596a0",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "game_df_cleaned.to_csv('gameclean2.csv')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a5bf512e-e6f6-490a-835b-8173abfb60c5",
+   "metadata": {},
+   "outputs": [],
+   "source": []
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3 (ipykernel)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.7"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
